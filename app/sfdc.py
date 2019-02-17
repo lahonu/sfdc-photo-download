@@ -16,9 +16,11 @@ import argparse
 import os
 import sys
 import codecs
+from dotenv import get_key, find_dotenv
 
 @app.route('/')
 def start():
+    print(get_key(find_dotenv,"SFDC_token"))
     return render_template('index.html')
 
 @app.route('/', methods=('GET', 'POST'))

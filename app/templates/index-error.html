@@ -1,0 +1,78 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<main>
+    <div class="container">
+      <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="/static/cloud.svg" alt="" width="72" height="72">
+        <h2>Download SFDC Case Attachments</h2>
+        <p class="lead">This form will allow you to download salesforce photos to a Dropbox folder.</p>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8 order-md-1">
+          <h3 class="mb-3">Salesforce Information</h3>
+          <form class="needs-validation" novalidate method="post">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="caseNumber">Case Number</label>
+                <input type="number" class="form-control" name="caseNumber" placeholder="" value="" required>
+                <div class="invalid-feedback">
+                  Valid case number is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" name="email" placeholder="you@example.com">
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-5 mb-3">
+                <label for="country">Token</label>
+                <select class="custom-select d-block w-100" name="token" required>
+                  <option value="">Choose...</option>
+                  <option>JCn6FVv3vAzO4zhAEh7xPcKYS</option>
+                </select>
+                <div class="invalid-feedback">
+                  Please select a valid token.
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Password">
+                <div class="invalid-feedback">
+                  Password required.
+                </div>
+              </div>
+            </div>
+            <hr class="mb-4">
+
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="dropbox">
+        <h4 style="color:red">Invalid Salesforce case number</h4>
+      </div>
+
+      <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2019 Sophia Fraticelli</p>
+        <ul class="list-inline">
+          <li class="list-inline-item"><a href="#">Privacy</a></li>
+          <li class="list-inline-item"><a href="#">Terms</a></li>
+          <li class="list-inline-item"><a href="#">Support</a></li>
+        </ul>
+      </footer>
+      <div align='center'>Icons made by <a href="https://www.flaticon.com/authors/lyolya" title="Lyolya">Lyolya</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    </div>
+
+</main>
+
+
+{% endblock %}
