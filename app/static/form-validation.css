@@ -1,0 +1,28 @@
+.container {
+  max-width: 860px;
+}
+
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+.border-top-gray { border-top-color: #adb5bd; }
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+.lh-condensed { line-height: 1.25; }
+
+.col-md-8 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100% ! important;
+    max-width: 100%;
+}
+
+.dropbox {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
