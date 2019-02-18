@@ -21,7 +21,7 @@ Head on over to the 'Releases' tab and download the zip archive.
 In a command prompt run the following commands from the root folder of the project.
 
 ```
-python -m venv .\venv
+py -3 -m venv .\venv
 ```
 
 Once that completes, also run this command from the same folder.
