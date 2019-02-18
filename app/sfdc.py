@@ -12,8 +12,9 @@ from dotenv import get_key, find_dotenv
 
 @app.route('/')
 def start():
+    token_v = get_sfdc_token()
     print(get_key(find_dotenv(),"Local_Dropbox_Folder"))
-    return render_template('index.html')
+    return render_template('index.html', token = token_v)
 
 @app.route('/', methods=('GET', 'POST'))
 def form_submit():
@@ -21,7 +22,7 @@ def form_submit():
         user_v = request.form['email']
         passwd_v = request.form['password']
         case_v = request.form['caseNumber']
-        token_v = request.form['token']
+        token_v = get_sfdc_token()
         storage_v = get_key(find_dotenv(),"Local_Dropbox_Folder")
 
         case_v = check_case_number(case_v)
@@ -36,7 +37,7 @@ def form_submit():
             len(case_v)
         except:
             error = "Invalid case number"
-            return render_template('index-error.html', error = error)
+            return render_template('index-error.html', error = error, token = token_v)
 
         # check SFDC credentials are valid
         salesforce_check = sfdc_authorization(user_v, passwd_v, token_v)
@@ -44,7 +45,7 @@ def form_submit():
             pass
         else:
             error = "Failed to connect to SFDC"
-            return render_template('index-error.html', error = error)
+            return render_template('index-error.html', error = error, token = token_v)
 
         new_dir = "{}\\\\{}".format(storage_v, case_v)
 
@@ -59,10 +60,10 @@ def form_submit():
         file_length = cleanup(new_dir)
 
         if file_length > 0:
-            return render_template("result.html", caseNumber = case_v, new_dir = dropbox_URL, files = file_length)
+            return render_template("result.html", caseNumber = case_v, new_dir = dropbox_URL, files = file_length, token = token_v)
         else:
             error = "No photos to upload"
-            return render_template('index-error.html', error = error)
+            return render_template('index-error.html', error = error, token = token_v)
 
 def check_case_number(case_v):
     # check the case is prepended with two zeroes
@@ -77,6 +78,10 @@ def check_case_number(case_v):
         pass
 
     return case_v
+
+def get_sfdc_token():
+    token_v = get_key(find_dotenv(),"SFDC_Token")
+    return token_v
 
 def sfdc_authorization(user_v, passwd_v, token_v):
     session = requests.Session()
