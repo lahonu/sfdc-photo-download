@@ -2,76 +2,109 @@ from app import app
 from flask import Flask, render_template, request
 import os
 
-'''
-@app.route('/')
-@app.route('/index')
-def index():
-    return "Hello, World!"
-'''
-
 from simple_salesforce import Salesforce
 import requests
 import logging
 import argparse
-import os
 import sys
 import codecs
 from dotenv import get_key, find_dotenv
 
 @app.route('/')
 def start():
-    print(get_key(find_dotenv,"SFDC_token"))
+    print(get_key(find_dotenv(),"Local_Dropbox_Folder"))
     return render_template('index.html')
 
 @app.route('/', methods=('GET', 'POST'))
 def form_submit():
-
     if request.method == 'POST':
         user_v = request.form['email']
+        passwd_v = request.form['password']
         case_v = request.form['caseNumber']
-        storage_v = "C:\\Users\\sfrat\\Dropbox (Alteryx, Inc.)\\Projects\\SFDC Case photos\\SFDC Case folders"
+        token_v = request.form['token']
+        storage_v = get_key(find_dotenv(),"Local_Dropbox_Folder")
 
-        # check the case is prepended with two zeroes
-        if len(case_v) == 6:
-            case_v = '00'+case_v
-        else:
+        case_v = check_case_number(case_v)
+
+        #testing
+        try:
+            print("Here is the length of the case number",len(case_v),'\n')
+        except:
+            print("Case length is NONE\n")
+
+        try:
+            len(case_v)
+        except:
+            error = "Invalid case number"
+            return render_template('index-error.html', error = error)
+
+        # check SFDC credentials are valid
+        salesforce_check = sfdc_authorization(user_v, passwd_v, token_v)
+        if salesforce_check == 1:
             pass
+        else:
+            error = "Failed to connect to SFDC"
+            return render_template('index-error.html', error = error)
 
-        new_dir = "{}\{}".format(storage_v, case_v)
+        new_dir = "{}\\\\{}".format(storage_v, case_v)
 
-        dropbox_baseURL = "https://www.dropbox.com/home/Projects/SFDC%20Case%20photos/SFDC%20Case%20folders"
+        dropbox_baseURL = get_key(find_dotenv(),"Dropbox_URL")
         dropbox_URL = "{}/{}".format(dropbox_baseURL,case_v)
 
         print('There was a POST request\n')
+        print("New dir is {}".format(new_dir))
 
-        download_attachments_on_case()
-        download_attachment_email()
+        download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, new_dir)
+        download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_dir)
         file_length = cleanup(new_dir)
 
         if file_length > 0:
             return render_template("result.html", caseNumber = case_v, new_dir = dropbox_URL, files = file_length)
         else:
-            return render_template('index-none.html')
+            error = "No photos to upload"
+            return render_template('index-error.html', error = error)
 
-def download_attachments_on_case():
-    session = requests.Session()
-    user_v = request.form['email']
-    passwd_v = request.form['password']
-    case_v = request.form['caseNumber']
-    token_v = request.form['token']
-    storage_v = "C:\\Users\\sfrat\\Dropbox (Alteryx, Inc.)\\Projects\\SFDC Case photos\\SFDC Case folders"
-
+def check_case_number(case_v):
     # check the case is prepended with two zeroes
     if len(case_v) == 6:
         case_v = '00'+case_v
+        print("Case number check: Added 00 to the case number {}\n".format(case_v))
+    elif len(case_v) > 8 or len(case_v)< 6:
+        print("Case number check: This should error {}\n".format(case_v))
+        case_v = None
     else:
+        print("Case number check: This case number is {}\n".format(case_v))
         pass
 
-    new_dir = "{}\{}".format(storage_v, case_v)
+    return case_v
+
+def sfdc_authorization(user_v, passwd_v, token_v):
+    session = requests.Session()
+    try:
+        sf = Salesforce(username = user_v,
+                        password = passwd_v,
+                        security_token = token_v,
+                        session = session)
+        error = 1
+    except:
+        logging.error("Failed to connect SFDC")
+        error = "Failed to connect to SFDC"
+
+    return error
+
+
+def download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, new_dir):
+    session = requests.Session()
+
+    print(len(case_v),case_v)
+    print(new_dir)
+
+    #new_dir = "{}\{}".format(storage_v, case_v)
     logging.info("New Directory is {}".format(new_dir))
 
     if not os.path.exists(new_dir):
-#check this line - is it needed?
+        #check this line - is it needed?
+        print(os.path.exists(new_dir))
         new_dir = "{}\{}".format(storage_v, case_v)
         os.mkdir(new_dir)
         logging.debug("Storage path doesn't exist yet - folder {} created".format(case_v))
@@ -91,7 +124,8 @@ def download_attachments_on_case():
                         session = session)
     except:
         logging.error("Failed to connect SFDC")
-        return
+        error = "Failed to connect to SFDC"
+        return error
 
     auth_id = "Bearer " + sf.session_id
     req_headers = {'Authorization': auth_id}
@@ -138,25 +172,14 @@ def download_attachments_on_case():
         with open(local_path, 'wb') as out_file:
             out_file.write(response.content)
 
-def download_attachment_email():
+def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_dir):
     session = requests.Session()
-    user_v = request.form['email']
-    passwd_v = request.form['password']
-    case_v = request.form['caseNumber']
-    token_v = request.form['token']
-    storage_v = "C:\\Users\\sfrat\\Dropbox (Alteryx, Inc.)\\Projects\\SFDC Case photos\\SFDC Case folders"
 
-    # check the case is prepended with two zeroes
-    if len(case_v) == 6:
-        case_v = '00'+case_v
-    else:
-        pass
-
-    new_dir = "{}\{}".format(storage_v, case_v)
+    #new_dir = "{}\{}".format(storage_v, case_v)
     logging.info("New Directory is {}".format(new_dir))
 
     if not os.path.exists(new_dir):
-#check this line - is it needed?
+        #check this line - is it needed?
         new_dir = "{}\{}".format(storage_v, case_v)
         os.mkdir(new_dir)
         logging.debug("Storage path doesn't exist yet - folder {} created".format(case_v))
@@ -167,7 +190,8 @@ def download_attachment_email():
 
     logging.basicConfig(level = logging.DEBUG,
                         format = '%(asctime)s - %(levelname)s - %(message)s',
-                        filemode = 'w')
+                        filemode = 'w',
+                        filename = 'sfdc_log.log')
 
     try:
         sf = Salesforce(username = user_v,
@@ -195,9 +219,9 @@ def download_attachment_email():
         return
 
     query = ("SELECT Id, ParentId, Name, Body, BodyLength FROM Attachment WHERE ParentId IN ("
-			"SELECT Id FROM EmailMessage WHERE ParentId = '{}')"
+			"SELECT Id FROM EmailMessage WHERE ParentId = '{}') "
             "AND BodyLength > 2000 AND BodyLength != 6912 "
-            "AND (Name LIKE '%.jpg' OR Name LIKE '%.png' OR Name LIKE '%.gif')"
+            "AND (Name LIKE '%.jpg' OR Name LIKE '%.png' OR Name LIKE '%.gif') "
             "AND IsDeleted = False LIMIT 100".format(case_sfdc_id))
 
     result = sf.query(query)
@@ -243,17 +267,17 @@ def download_attachment_email():
             print("Photo {} already exists".format(len(distinct_ids)))
 
 
-
-
 def cleanup(new_dir):
-    dir_length = len(os.listdir(new_dir))
-
-    if dir_length == 0:
-        print("There was nothing in this directory so it will be deleted")
-        logging.warning("There are no files in this directory. Directory will be deleted")
-        os.rmdir(new_dir)
-    else:
-        print("Number of files in directory: {}\n".format(dir_length))
-        logging.warning("Number of files in directory: {}".format(dir_length))
+    try:
+        dir_length = len(os.listdir(new_dir))
+        if dir_length == 0:
+            print("There was nothing in this directory so it will be deleted")
+            logging.warning("There are no files in this directory. Directory will be deleted")
+            os.rmdir(new_dir)
+        else:
+            print("Number of files in directory: {}\n".format(dir_length))
+            logging.warning("Number of files in directory: {}".format(dir_length))
+    except:
+        dir_length = 0
 
     return dir_length
