@@ -16,7 +16,7 @@ The following will need to be set up to use the application:
 #### Dropbox Configuration
 Download the [Dropbox Client](https://www.dropbox.com/install) and create a folder that will hold the photos that you download from Salesforce. This should be configured to your corporate Dropbox account.
 
-Once created, right-click this folder and select 'View on <span>Dropbox.com</span>'
+Once created, right-click this folder and select 'View on <span>Dropbox.com</span>' and copy this URL.
 
 ### Download and Install this application
 
