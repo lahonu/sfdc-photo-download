@@ -42,7 +42,7 @@ My_Project_Folder
     ├── requirements.txt
     └── sfdc.py
 ```
-##### Create Virtual Environment
+### Create Virtual Environment
 
 In a command prompt run the following commands from the project root folder.
 ```
@@ -60,14 +60,14 @@ cd sfdc-photo-download-1.0
 pip install -r requirements.txt
 ```
 
-#### Edit the .env file
+### Edit the .env file
 This file contains the information specific to you - edit the following variables with the information gathered in the 'Pre Work' section.
 ```
 Dropbox_URL
 Local_Dropbox_Folder
 ```
 
-##### Verify Setup
+#### Verify Setup
 
 If everything was successful, your project folder should now have the following structure:
 ```
