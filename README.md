@@ -63,6 +63,7 @@ pip install -r requirements.txt
 ### Edit the .env file
 This file contains the information specific to you - edit the following variables with the information gathered in the 'Pre Work' section.
 ```
+SFDC_Token
 Dropbox_URL
 Local_Dropbox_Folder
 ```
