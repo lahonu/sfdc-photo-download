@@ -1,45 +1,96 @@
+
 <span style="display:block;align:center"><img src='https://static.brandfolder.com/salesforce/logo/salesforce-primary-logo.png' height='100'/></span>
 
 # SFDC Photo Downloader
 
 Downloads all images attached to a Salesforce case into a local Dropbox folder
 _Built with Python and Flask_
-## Steps for Installing
 
-Head on over to the 'Releases' tab and download the zip archive.
-## Make the necessary changes
-1. Create your local Dropbox folder
-2. Create a project folder for this app to live in
-3. Download the zip from this repository and place in your project folder
-4. Install the python dependencies
-5. Run Flask
+## Installation
 
-## Verify Local Environment
+### Pre-Work
+The following will need to be set up to use the application:
+1. A local Dropbox folder where your the case photos will be downloaded to
+2. The URL of the Dropbox folder
 
-### Create Virtual Environment
+#### Dropbox Configuration
+Download the [Dropbox Client](https://www.dropbox.com/install) and create a folder that will hold the photos that you download from Salesforce. This should be configured to your corporate Dropbox account.
 
-In a command prompt run the following commands from the root folder of the project.
+Once created, right-click this folder and select 'View on <span>Dropbox.com</span>'
 
+### Download and Install this application
+
+#### Create a local folder and download the zip
+Create a folder that will hold this application (this will now be referred to as the _project root folder_). Head on over to the [Releases](https://github.com/lahonu/sfdc-photo-download/releases/latest) tab and download the zip archive. Unzip this folder into the root of your project folder.
+
+#### Or, clone the repository
+Optionally, you can clone this repository into your project root folder.
+
+#### Verify Local Environment
+Your setup should now look as follows:
+```
+My_Project_Folder
+└── sfdc-photo-download-1.0
+    ├── app
+    │   ├── ──pycache──
+    │   ├── static
+    │   ├── templates
+    │   ├── ──init──.py
+    │   └── sfdc.py
+    ├── .env
+    ├── README.md
+    ├── requirements.txt
+    └── sfdc.py
+```
+##### Create Virtual Environment
+
+In a command prompt run the following commands from the project root folder.
 ```
 py -3 -m venv .\venv
 ```
-
 Once that completes, also run this command from the same folder.
-
 ```
 venv\Scripts\activate.bat
 ```
-
 You will now see a (venv) marker at the beginning of your line which indicates you are in the virtual environment.
 
-Now that you are working in the virtualenv, change to the project folder and install the project dependencies with the following commands.
-
+Now that you are working in the virtualenv, change directories into the application root folder and install the project dependencies.
 ```
-cd sfdc-photo-download
+cd sfdc-photo-download-1.0
 pip install -r requirements.txt
 ```
 
-### Verify Setup
+#### Edit the .env file
+This file contains the information specific to you - edit the following variables with the information gathered in the 'Pre Work' section.
+```
+Dropbox_URL
+Local_Dropbox_Folder
+```
 
+##### Verify Setup
 
-You can verify the application is working by running `flask run` in the root of your fork and then visit`http://localhost:5000` in your browser.
+If everything was successful, your project folder should now have the following structure:
+```
+My_Project_Folder
+├── sfdc-photo-download-1.0
+│   ├── app
+│   │   ├── ──pycache──
+│   │   ├── static
+│   │   ├── templates
+│   │   ├── ──init──.py
+│   │   └── sfdc.py
+│   ├── .env
+│   ├── README.md
+│   ├── requirements.txt
+│   └── sfdc.py
+└── venv
+    ├── Include
+    ├── Lib
+    ├── Scripts
+    ├── pip-selfcheck.json
+    └── pyvenv.cfg
+```
+You can verify the application is working by running `flask run` in the application root folder and then visit `http://localhost:5000` in your browser.
+
+## Using the Application
+To start the application, navigate to the application folder and run `flask run`. Open `http://localhost:5000` in your browser.
