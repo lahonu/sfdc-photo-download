@@ -46,7 +46,7 @@ My_Project_Folder
 
 In a command prompt run the following commands from the project root folder.
 ```
-py -3 -m venv .\venv
+"C:\Program Files\Alteryx\bin\Miniconda3\python.exe" -m venv .\venv
 ```
 Once that completes, also run this command from the same folder.
 ```
