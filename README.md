@@ -94,4 +94,14 @@ My_Project_Folder
 You can verify the application is working by running `flask run` in the application root folder and then visit `http://localhost:5000` in your browser.
 
 ## Using the Application
-To start the application, navigate to the application folder and run `flask run`. Open `http://localhost:5000` in your browser.
+To start the application, navigate to the application folder and activate your python environment.
+```
+venv\Scripts\activate.bat
+```
+
+Then, change into the project root folder.
+```
+cd sfdc-photo-download
+```
+
+Lastly, run `flask run`. Open `http://localhost:5000` in your browser.
