@@ -9,14 +9,13 @@ _Built with Python and Flask_
 ## Installation
 
 ### Pre-Work
-The following will need to be set up to use the application:
-1. A local Dropbox folder where your the case photos will be downloaded to
-2. The URL of the Dropbox folder
 
 #### Dropbox Configuration
-Download the [Dropbox Client](https://www.dropbox.com/install) and create a folder that will hold the photos that you download from Salesforce. This should be configured to your corporate Dropbox account.
+Download the [Dropbox Client](https://www.dropbox.com/install) and create a folder that will hold the photos that are downloaded from Salesforce. This should be configured to your corporate Dropbox account. Copy the path of this folder - you will need it later.
 
-Once created, right-click this folder and select 'View on <span>Dropbox.com</span>' and copy this URL.
+Once created, right-click this folder and select 'View on <span>Dropbox.com</span>' and copy this URL - you will need it later.
+#### Salesforce Token
+You will also need your Salesforce token - if you are accustomed to using SSO and don't have a Salesforce token, please go to https://login.salesforce.com/ and click 'Forgot Your Password?' to create a password. _This password is only used for the API, and will not interfere with your SSO login._ Once you set your password, you will receive and email with your Token.
 
 ### Download and Install this application
 
@@ -30,12 +29,11 @@ Optionally, you can clone this repository into your project root folder.
 Your setup should now look as follows:
 ```
 My_Project_Folder
-└── sfdc-photo-download-1.0
+└── sfdc-photo-download-1.1
     ├── app
-    │   ├── ──pycache──
     │   ├── static
     │   ├── templates
-    │   ├── ──init──.py
+    │   ├── __init__.py
     │   └── sfdc.py
     ├── .env
     ├── README.md
@@ -44,7 +42,7 @@ My_Project_Folder
 ```
 ### Create Virtual Environment
 
-In a command prompt run the following commands from the project root folder.
+In a command prompt run the following commands from the project root folder (in the above diagram, it is called `My_Project_Folder`).
 ```
 "C:\Program Files\Alteryx\bin\Miniconda3\python.exe" -m venv .\venv
 ```
@@ -54,54 +52,55 @@ venv\Scripts\activate.bat
 ```
 You will now see a (venv) marker at the beginning of your line which indicates you are in the virtual environment.
 
-Now that you are working in the virtualenv, change directories into the application root folder and install the project dependencies.
+Now that you are working in the virtualenv, change directories into the sfdc-photo-download-1.1 (this will now be referred to as the _application root folder_) and install the project dependencies.
 ```
-cd sfdc-photo-download-1.0
+cd sfdc-photo-download-1.1
 pip install -r requirements.txt
 ```
 
 ### Edit the .env file
-This file contains the information specific to you - edit the following variables with the information gathered in the 'Pre Work' section.
+This file contains your personal information - edit the following variables with the information gathered in the 'Pre Work' section.
 ```
 SFDC_Token
 Dropbox_URL
 Local_Dropbox_Folder
 ```
+**Please note** - The \ character needs to be escaped - please enter it as follows:
+`C:\\Users\\username\\My_Project_Folder`
 
 #### Verify Setup
 
-If everything was successful, your project folder should now have the following structure:
+Your project folder should now have the following structure:
 ```
 My_Project_Folder
-├── sfdc-photo-download-1.0
+├── sfdc-photo-download-1.1
 │   ├── app
-│   │   ├── ──pycache──
 │   │   ├── static
 │   │   ├── templates
-│   │   ├── ──init──.py
+│   │   ├── __init__.py
 │   │   └── sfdc.py
 │   ├── .env
 │   ├── README.md
 │   ├── requirements.txt
 │   └── sfdc.py
-└── venv
-    ├── Include
-    ├── Lib
-    ├── Scripts
-    ├── pip-selfcheck.json
-    └── pyvenv.cfg
+├── venv
+├── Include
+├── Lib
+├── Scripts
+├── pip-selfcheck.json
+└── pyvenv.cfg
 ```
-You can verify the application is working by running `flask run` in the application root folder and then visit `http://localhost:5000` in your browser.
+You can verify the application is working by running `flask run` in the application root folder (sfdc-photo-download-1.1) and then visiting `http://localhost:5000` in your browser.
 
 ## Using the Application
-To start the application, navigate to the application folder and activate your python environment.
+To start the application, navigate to the application root folder and activate your python environment.
 ```
 venv\Scripts\activate.bat
 ```
 
 Then, change into the project root folder.
 ```
-cd sfdc-photo-download
+cd sfdc-photo-download-1.1
 ```
 
 Lastly, run `flask run`. Open `http://localhost:5000` in your browser.
