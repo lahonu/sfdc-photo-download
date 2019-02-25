@@ -4,6 +4,11 @@
 # SFDC Photo Downloader
 
 Downloads all images attached to a Salesforce case into a local Dropbox folder
+
+<p align="center">
+  <img height="500" src="https://i.imgur.com/lsjQljB.png">
+</p>
+
 _Built with Python and Flask_
 
 ## Installation
