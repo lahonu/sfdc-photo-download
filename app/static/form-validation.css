@@ -22,6 +22,20 @@
   padding-bottom: 20px;
 }
 
+.col-md-3 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 58% ! important;
+    max-width: 100%;
+}
+
+.col-md-6 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100% ! important;
+    max-width: 100%;
+}
+
 th, td {
   padding: 10px;
   text-align: left;
