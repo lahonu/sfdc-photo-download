@@ -1,5 +1,5 @@
 .container {
-  max-width: 860px;
+  max-width: 860px ! important;
 }
 
 .border-top { border-top: 1px solid #e5e5e5; }
@@ -34,6 +34,10 @@
     -ms-flex: 0 0 100%;
     flex: 0 0 100% ! important;
     max-width: 100%;
+}
+
+.smalltext {
+  font-size: 12px
 }
 
 th, td {
