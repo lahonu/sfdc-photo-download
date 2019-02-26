@@ -1,14 +1,14 @@
 from app import app
 from flask import Flask, render_template, request
-import os
-
 from simple_salesforce import Salesforce
+from dotenv import get_key, find_dotenv
 import requests
+import os
 import logging
 import argparse
 import sys
 import codecs
-from dotenv import get_key, find_dotenv
+
 
 @app.route('/')
 def start():
@@ -25,14 +25,8 @@ def form_submit():
         token_v = get_sfdc_token()
         storage_v = get_key(find_dotenv(),"Local_Dropbox_Folder")
 
+        # check the case number is valid
         case_v = check_case_number(case_v)
-
-        #testing
-        try:
-            print("Here is the length of the case number",len(case_v),'\n')
-        except:
-            print("Case length is NONE\n")
-
         try:
             len(case_v)
         except:
@@ -52,15 +46,15 @@ def form_submit():
         dropbox_baseURL = get_key(find_dotenv(),"Dropbox_URL")
         dropbox_URL = "{}/{}".format(dropbox_baseURL,case_v)
 
-        print('There was a POST request\n')
-        print("New dir is {}".format(new_dir))
-
-        download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, new_dir)
-        download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_dir)
+        download_attachments_on_case(user_v, passwd_v, case_v, token_v,
+            storage_v, new_dir)
+        download_attachment_email(user_v, passwd_v, case_v, token_v,
+            storage_v, new_dir)
         file_length = cleanup(new_dir)
 
         if file_length > 0:
-            return render_template("result.html", caseNumber = case_v, new_dir = dropbox_URL, files = file_length, token = token_v)
+            return render_template("result.html", caseNumber = case_v,
+                new_dir = dropbox_URL, files = file_length, token = token_v)
         else:
             error = "No photos to upload"
             return render_template('index-error.html', error = error, token = token_v)
@@ -69,9 +63,9 @@ def check_case_number(case_v):
     # check the case is prepended with two zeroes
     if len(case_v) == 6:
         case_v = '00'+case_v
-        print("Case number check: Added 00 to the case number {}\n".format(case_v))
+        print("Case# check: Added 00 to the case number {}\n".format(case_v))
     elif len(case_v) > 8 or len(case_v)< 6:
-        print("Case number check: This should error {}\n".format(case_v))
+        print("Case# check: This should error {}\n".format(case_v))
         case_v = None
     else:
         print("Case number check: This case number is {}\n".format(case_v))
@@ -98,7 +92,8 @@ def sfdc_authorization(user_v, passwd_v, token_v):
     return error
 
 
-def download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, new_dir):
+def download_attachments_on_case(user_v, passwd_v, case_v, token_v,
+        storage_v, new_dir):
     session = requests.Session()
 
     print(len(case_v),case_v)
@@ -112,7 +107,7 @@ def download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, n
         print(os.path.exists(new_dir))
         new_dir = "{}\{}".format(storage_v, case_v)
         os.mkdir(new_dir)
-        logging.debug("Storage path doesn't exist yet - folder {} created".format(case_v))
+        logging.debug("Storage path doesn't exist - folder {} created".format(case_v))
 
     if not os.path.isdir(storage_v):
         logging.error("ERROR: Storage path must be a directory")
@@ -164,7 +159,7 @@ def download_attachments_on_case(user_v, passwd_v, case_v, token_v, storage_v, n
         remote_file_lower = remote_file.lower()
         remote_path = "https://{}.salesforce.com{}".format(sf_pod, body_uri)
         local_file = "{}_{}".format(record.get('Id'), remote_file)
-        local_path = os.path.join(storage_dir, local_file)
+        local_path = os.path.join(new_dir, local_file)
 
         logging.info("Downloading {} to {}".format(remote_file, local_path))
         logging.debug("Remote URL: {}".format(remote_path))
@@ -223,11 +218,11 @@ def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_
     except:
         return
 
-    query = ("SELECT Id, ParentId, Name, Body, BodyLength FROM Attachment WHERE ParentId IN ("
-			"SELECT Id FROM EmailMessage WHERE ParentId = '{}') "
-            "AND BodyLength > 2000 AND BodyLength != 6912 "
-            "AND (Name LIKE '%.jpg' OR Name LIKE '%.png' OR Name LIKE '%.gif') "
-            "AND IsDeleted = False LIMIT 100".format(case_sfdc_id))
+    query = ("SELECT Id, ParentId, Name, Body, BodyLength FROM Attachment WHERE"
+            " ParentId IN (SELECT Id FROM EmailMessage WHERE ParentId = '{}')"
+            " AND BodyLength > 2000 AND BodyLength != 6912 "
+            " AND (Name LIKE '%.jpg' OR Name LIKE '%.png' OR Name LIKE '%.gif')"
+            " AND IsDeleted = False LIMIT 100".format(case_sfdc_id))
 
     result = sf.query(query)
     print("Running query 3: {}\n".format(query))
@@ -237,11 +232,10 @@ def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_
     total_records = result.get('totalSize', 0)
     print('Total records retrieved: {}'.format(total_records))
 
-    logging.info('Starting to download {} attachments'.format(total_records))
-
     storage_dir = new_dir
     sf_pod = sf.base_url.replace("https://", "").split('.salesforce.com')[0]
 
+    logging.info('Starting to download {} attachments'.format(total_records))
     records = result.get('records', {})
     distinct_ids = []
     for record in records:
@@ -257,7 +251,7 @@ def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_
             remote_file_lower = remote_file.lower()
             remote_path = "https://{}.salesforce.com{}".format(sf_pod, body_uri)
             local_file = "{}_{}".format(record.get('Id'), remote_file)
-            local_path = os.path.join(storage_dir, local_file)
+            local_path = os.path.join(new_dir, local_file)
 
             logging.info("Downloading {} to {}".format(remote_file, local_path))
             logging.debug("Remote URL: {}".format(remote_path))
@@ -277,7 +271,7 @@ def cleanup(new_dir):
         dir_length = len(os.listdir(new_dir))
         if dir_length == 0:
             print("There was nothing in this directory so it will be deleted")
-            logging.warning("There are no files in this directory. Directory will be deleted")
+            logging.warning("There are no files in this dir. Directory will be deleted")
             os.rmdir(new_dir)
         else:
             print("Number of files in directory: {}\n".format(dir_length))
