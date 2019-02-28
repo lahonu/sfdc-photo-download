@@ -34,7 +34,7 @@ Optionally, you can clone this repository into your project root folder.
 Your setup should now look as follows:
 ```
 My_Project_Folder
-└── sfdc-photo-download-1.0
+└── sfdc-photo-download-1.x
     ├── app
     │   ├── static
     │   ├── templates
@@ -60,7 +60,7 @@ You will now see a (venv) marker at the beginning of your line which indicates y
 
 Now that you are working in the virtualenv, change directories into the sfdc-photo-download-1.1 (this will now be referred to as the _application root folder_) and install the project dependencies.
 ```
-cd sfdc-photo*
+cd sfdc*
 pip install -r requirements.txt
 ```
 
@@ -79,7 +79,7 @@ Local_Dropbox_Folder
 Your project folder should now have the following structure:
 ```
 My_Project_Folder
-├── sfdc-photo-download-1.0
+├── sfdc-photo-download-1.x
 │   ├── app
 │   │   ├── static
 │   │   ├── templates
@@ -97,7 +97,7 @@ My_Project_Folder
     ├── pip-selfcheck.json
     └── pyvenv.cfg
 ```
-You can verify the application is working by running `flask run` in the application root folder (sfdc-photo-download-1.1) and then visiting `http://localhost:5000` in your browser.
+You can verify the application is working by running `flask run` in the application root folder (sfdc-photo-download-1.x) and then visiting `http://localhost:5000` in your browser.
 
 ## Using the Application
 To start the application, navigate to the application root folder and double-click the `start.bat` file. A command prompt will appear, and once loaded you can open `http://localhost:5000` in your browser.
