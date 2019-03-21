@@ -91,4 +91,4 @@ My_Project_Folder
 ```
 
 ## Using the Application
-To start the application, navigate to the sfdc-photo-download-1.x and double-click the `start.bat` file. A command prompt will appear, and once loaded you can open `http://localhost:5000` in your browser.
+To start the application, navigate to the sfdc-photo-download-1.x and double-click the `start.bat` file. A command prompt will appear - once loaded open `http://localhost:5000` in your browser to use the app.
