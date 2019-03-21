@@ -32,6 +32,17 @@
             </div>
 
             <div class="row">
+              <div class="col-md-5 mb-3">
+                <label for="country">Choose attachments to download</label>
+                <select class="custom-select d-block w-100" name="attachment_type" required>
+                  <option value="">Choose...</option>
+                  <option>Images Only</option>
+                  <option>All File Types</option>
+                </select>
+                <div class="invalid-feedback">
+                  Please select an option.
+                </div>
+                </div>
               <div class="col-md-3 mb-3">
                 <label for="password">Password</label>
                 <input type="password" class="form-control" name="password" placeholder="Password">
@@ -56,12 +67,12 @@
                <td> {{ caseNumber }} </td>
             </tr>
             <tr>
-              <th>Photos downloaded</th>
+              <th>Items downloaded</th>
               <td> {{ files }} </td>
             </tr>
       </table>
       <br>
-      Click <a href="{{ new_dir }}" target="_blank">here</a> to go to the dropbox link.
+      Click <a href="{{ new_dir }}" target="_blank">here</a> to go to the dropbox link. Please note there may be a delay while Dropbox syncs from your machine to the cloud.
       </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">

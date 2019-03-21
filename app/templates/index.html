@@ -32,6 +32,17 @@
             </div>
 
             <div class="row">
+              <div class="col-md-5 mb-3">
+                <label for="country">Choose attachments to download</label>
+                <select class="custom-select d-block w-100" name="attachment_type" required>
+                  <option value="">Choose...</option>
+                  <option>Images Only</option>
+                  <option>All File Types</option>
+                </select>
+                <div class="invalid-feedback">
+                  Please select an option.
+                </div>
+              </div>
               <div class="col-md-3 mb-3">
                 <label for="password">Password</label>
                 <input id="pwd-text" type="password" class="form-control" name="password" placeholder="Password">

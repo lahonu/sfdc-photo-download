@@ -8,12 +8,16 @@ import logging
 import argparse
 import sys
 import codecs
+import time
 
 
 @app.route('/')
 def start():
     token_v = get_sfdc_token()
     print(get_key(find_dotenv(),"Local_Dropbox_Folder"))
+    print(token_v)
+    #attachment_type_v = request.form['attachment']
+    #print(attachment_type_v)
     return render_template('index.html', token = token_v)
 
 @app.route('/', methods=('GET', 'POST'))
@@ -22,6 +26,8 @@ def form_submit():
         user_v = request.form['email']
         passwd_v = request.form['password']
         case_v = request.form['caseNumber']
+        attachment_type_v = request.form['attachment_type']
+        print(attachment_type_v)
         token_v = get_sfdc_token()
         storage_v = get_key(find_dotenv(),"Local_Dropbox_Folder")
 
@@ -48,8 +54,13 @@ def form_submit():
 
         download_attachments_on_case(user_v, passwd_v, case_v, token_v,
             storage_v, new_dir)
-        download_attachment_email(user_v, passwd_v, case_v, token_v,
-            storage_v, new_dir)
+
+        if attachment_type_v == 'All File Types':
+            download_attachments_all(user_v, passwd_v, case_v, token_v,
+                storage_v, new_dir)
+        else:
+            download_attachment_email(user_v, passwd_v, case_v, token_v,
+                storage_v, new_dir)
         file_length = cleanup(new_dir)
 
         if file_length > 0:
@@ -148,29 +159,36 @@ def download_attachments_on_case(user_v, passwd_v, case_v, token_v,
     storage_dir = new_dir
     sf_pod = sf.base_url.replace("https://", "").split('.salesforce.com')[0]
 
+    logging.info('Starting to download {} attachments'.format(total_records))
     records = result.get('records', {})
+    distinct_ids = []
     for record in records:
-        body_uri = record.get('Body')
-        if not body_uri:
-            logging.warning("No body URI for file id {}".format(record.get('Id', '')))
-            continue
+        if record.get('BodyLength') not in distinct_ids:
+            distinct_ids.append(record.get('BodyLength'))
+            print(distinct_ids)
+            body_uri = record.get('Body')
+            if not body_uri:
+                logging.warning("No body URI for file id {}".format(record.get('Id', '')))
+#                continue
 
-        remote_file = record.get('Name')
-        remote_file_lower = remote_file.lower()
-        remote_path = "https://{}.salesforce.com{}".format(sf_pod, body_uri)
-        local_file = "{}_{}".format(record.get('Id'), remote_file)
-        local_path = os.path.join(new_dir, local_file)
+            remote_file = record.get('Name')
+            remote_file_lower = remote_file.lower()
+            remote_path = "https://{}.salesforce.com{}".format(sf_pod, body_uri)
+            local_file = "{}_{}".format(record.get('Id'), remote_file)
+            local_path = os.path.join(new_dir, local_file)
 
-        logging.info("Downloading {} to {}".format(remote_file, local_path))
-        logging.debug("Remote URL: {}".format(remote_path))
+            logging.info("Downloading {} to {}".format(remote_file, local_path))
+            logging.debug("Remote URL: {}".format(remote_path))
 
-        response = session.get(remote_path, headers=req_headers)
-        if response.status_code != 200:
-            logging.error("Download failed {}".format(response.status_code))
-            continue
+            response = session.get(remote_path, headers=req_headers)
+            if response.status_code != 200:
+                logging.error("Download failed {}".format(response.status_code))
+                continue
+            with open(local_path, 'wb') as out_file:
+                out_file.write(response.content)
+        else:
+            print("Photo {} already exists".format(len(distinct_ids)))
 
-        with open(local_path, 'wb') as out_file:
-            out_file.write(response.content)
 
 def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_dir):
     session = requests.Session()
@@ -265,6 +283,100 @@ def download_attachment_email(user_v, passwd_v, case_v, token_v, storage_v, new_
         else:
             print("Photo {} already exists".format(len(distinct_ids)))
 
+def download_attachments_all(user_v, passwd_v, case_v, token_v,
+        storage_v, new_dir):
+    session = requests.Session()
+
+    #new_dir = "{}\{}".format(storage_v, case_v)
+    logging.info("New Directory is {}".format(new_dir))
+
+    if not os.path.exists(new_dir):
+        #check this line - is it needed?
+        new_dir = "{}\{}".format(storage_v, case_v)
+        os.mkdir(new_dir)
+        logging.debug("Storage path doesn't exist yet - folder {} created".format(case_v))
+
+    if not os.path.isdir(storage_v):
+        logging.error("ERROR: Storage path must be a directory")
+        sys.exit(1)
+
+    logging.basicConfig(level = logging.DEBUG,
+                        format = '%(asctime)s - %(levelname)s - %(message)s',
+                        filemode = 'w',
+                        filename = 'sfdc_log.log')
+
+    try:
+        sf = Salesforce(username = user_v,
+                        password = passwd_v,
+                        security_token = token_v,
+                        session = session)
+    except:
+        logging.error("Failed to connect SFDC")
+        return
+
+    auth_id = "Bearer " + sf.session_id
+    req_headers = {'Authorization': auth_id}
+    query_case_id = ("SELECT Id FROM Case WHERE Casenumber = '{}'".format(case_v))
+
+    result_case = sf.query(query_case_id)
+    print("Running query 2: {}\n".format(query_case_id))
+    logging.info("Running query: {}".format(query_case_id))
+    print("Query 2 result is: {}\n".format(result_case))
+
+    try:
+        case_sfdc_id = result_case.get('records')[0].get('Id')
+        logging.debug("The case id is: {}".format(case_sfdc_id))
+        print("The case id is: {}\n".format(case_sfdc_id))
+    except:
+        return
+
+    query = ("SELECT Id, ParentId, Name, Body, BodyLength FROM Attachment WHERE"
+            " ParentId IN (SELECT Id FROM EmailMessage WHERE ParentId = '{}')"
+            " AND BodyLength > 2000 AND BodyLength != 6912 "
+#            " AND (Name LIKE '%.jpg' OR Name LIKE '%.png' OR Name LIKE '%.gif')"
+            " AND IsDeleted = False LIMIT 100".format(case_sfdc_id))
+
+    result = sf.query(query)
+    print("Running query 3: {}\n".format(query))
+    logging.info("Running query: {}".format(query))
+    print("Query 3 result is: {}\n".format(result))
+
+    total_records = result.get('totalSize', 0)
+    print('Total records retrieved: {}'.format(total_records))
+
+    storage_dir = new_dir
+    sf_pod = sf.base_url.replace("https://", "").split('.salesforce.com')[0]
+
+    logging.info('Starting to download {} attachments'.format(total_records))
+    records = result.get('records', {})
+    distinct_ids = []
+    for record in records:
+        if record.get('BodyLength') not in distinct_ids:
+            distinct_ids.append(record.get('BodyLength'))
+            print(distinct_ids)
+            body_uri = record.get('Body')
+            if not body_uri:
+                logging.warning("No body URI for file id {}".format(record.get('Id', '')))
+#                continue
+
+            remote_file = record.get('Name')
+            remote_file_lower = remote_file.lower()
+            remote_path = "https://{}.salesforce.com{}".format(sf_pod, body_uri)
+            local_file = "{}_{}".format(record.get('Id'), remote_file)
+            local_path = os.path.join(new_dir, local_file)
+
+            logging.info("Downloading {} to {}".format(remote_file, local_path))
+            logging.debug("Remote URL: {}".format(remote_path))
+
+            response = session.get(remote_path, headers=req_headers)
+            if response.status_code != 200:
+                logging.error("Download failed {}".format(response.status_code))
+                continue
+            with open(local_path, 'wb') as out_file:
+                out_file.write(response.content)
+        else:
+            print("Photo {} already exists".format(len(distinct_ids)))
+
 
 def cleanup(new_dir):
     try:
@@ -274,6 +386,21 @@ def cleanup(new_dir):
             logging.warning("There are no files in this dir. Directory will be deleted")
             os.rmdir(new_dir)
         else:
+            distinct_files = {}
+            items_keep = {}
+            for root, dirs, files in os.walk(new_dir, topdown=False):
+                for name in files:
+                    f = os.path.join(root,name)
+                    distinct_files[name] = os.path.getsize(f)
+            for key, value in distinct_files.items():
+                if value not in items_keep.values():
+                    items_keep[key] = value
+            for key, value in distinct_files.items():
+                if key not in items_keep.keys():
+                    f = new_dir + '\\' + key
+                    os.remove(f)
+#            time.sleep(10)
+            dir_length = len(os.listdir(new_dir))
             print("Number of files in directory: {}\n".format(dir_length))
             logging.warning("Number of files in directory: {}".format(dir_length))
     except:
