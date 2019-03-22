@@ -1,5 +1,5 @@
 
-<span style="display:block;align:center"><img src='https://static.brandfolder.com/salesforce/logo/salesforce-primary-logo.png' height='100'/></span>
+<span style="display:block;align:center"><img src='https://static.brandfolder.com/salesforce/logo/salesforce-primary-logo.png' height='70'/></span>
 
 # SFDC Photo Downloader
 
