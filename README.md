@@ -39,7 +39,7 @@ Optionally, you can clone this repository into your project root folder.
 Your setup should now look as follows:
 ```
 My_Project_Folder
-└── sfdc-photo-download-1.x
+└── sfdc-photo-download-2.x
     ├── app
     │   ├── static
     │   ├── templates
@@ -70,7 +70,7 @@ Local_Dropbox_Folder
 Your project root folder should now have the following structure:
 ```
 My_Project_Folder
-├── sfdc-photo-download-1.x
+├── sfdc-photo-download-2.x
 │   ├── app
 │   │   ├── static
 │   │   ├── templates
@@ -91,4 +91,8 @@ My_Project_Folder
 ```
 
 ## Using the Application
-To start the application, navigate to the sfdc-photo-download-1.x and double-click the `start.bat` file. A command prompt will appear - once loaded open `http://localhost:5000` in your browser to use the app.
+To start the application, navigate to the sfdc-photo-download-2.x and double-click the `start.bat` file. A command prompt will appear - once loaded open `http://localhost:5000` in your browser to use the app.
+
+**On first run, the app may take up to a minute to load.
+
+
