@@ -3,10 +3,10 @@
 
 # SFDC Photo Downloader
 
-Downloads all images attached to a Salesforce case into a local Dropbox folder for easy viewing, sharing, or uploading for SME posts.
+Downloads all images/files attached to a Salesforce case into a local Dropbox folder for easy viewing, sharing, or uploading for SME posts.
 
 <p align="center">
-  <img height="500" src="https://i.imgur.com/lsjQljB.png">
+  <img height="500" src="https://i.imgur.com/kCk58bx.png">
 </p>
 
 **Built with**
