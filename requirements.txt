@@ -16,4 +16,4 @@ requests==2.21.0
 simple-salesforce==0.74.2
 six==1.12.0
 urllib3==1.24.1
-Werkzeug==0.14.1
+Werkzeug==0.16.0
