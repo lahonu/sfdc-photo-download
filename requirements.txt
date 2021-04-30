@@ -15,5 +15,5 @@ python-dotenv==0.9.1
 requests==2.21.0
 simple-salesforce==0.74.2
 six==1.12.0
-urllib3==1.25.6
+urllib3==1.25.8
 Werkzeug==0.16.0
